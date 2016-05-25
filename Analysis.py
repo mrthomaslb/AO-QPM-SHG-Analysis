@@ -25,24 +25,11 @@ print("---------------------------------------------------")
 print
 
 #### FUNCTIONS ####
-def Smooth(position_array, wavelength_array, intensity_array):
+def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
 
 	# Create temporary list for value handling
 	new_list = []
-
-	# Prompt user input of smoothing factor
-	print
-	print("Length of input array = " + str(len(wavelength_array[0])))
-	smooth_factor = input("Smoothing factor: ")
-
-	# Check if smoothing factor is within reasonable bounds
-	while smooth_factor > len(wavelength_array[0]):
-		smooth_factor = input("Choose smoothing factor less than length of array: ")
-
-	# Check if smoothing factor is integer type
-	while smooth_factor != int(smooth_factor):
-		smooth_factor = input("Choose smoothing factor that is integer type: ")
 
 	# Calculate edge pixels to avoid smoothing
 	edge_pixels = (smooth_factor - 1) // 2
@@ -169,15 +156,28 @@ DeltaInt = np.transpose(DeltaInt)
 lmda = int(raw_input("Select wavelength for relative position lineout: "))
 
 pixel=wavel_to_pixel(lmda)
+
+# Prompt user input of smoothing factor
+print
+print("Length of input array = " + str(len(wavelengths[0])))
+smooth_factor = input("Smoothing factor: ")
+
+# Check if smoothing factor is within reasonable bounds
+while smooth_factor > len(wavelengths[0]):
+	smooth_factor = input("Choose smoothing factor less than length of array: ")
+
+# Check if smoothing factor is integer type
+while smooth_factor != int(smooth_factor):
+	smooth_factor = input("Choose smoothing factor that is integer type: ")
 ######################################################
 
 ################## Smooth data ##################
-DeltaIntSm = Smooth(positions, wavelengths, DeltaInt)
+DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
 ######################################################
 print("Smoothed")
 
 ################## Smooth normalization spectrum ##################
-NormSpecSm = Smooth(positions, wavelengths, NormSpec)
+NormSpecSm = Smooth(positions, wavelengths, NormSpec, smooth_factor)
 #I just made the position_array and wavelength_array variables that I passed in
 #the same as when I smoothed the data, but I don't know if this is correct.
 ######################################################
