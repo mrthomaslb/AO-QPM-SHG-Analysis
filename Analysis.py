@@ -12,7 +12,7 @@ import os
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-#import matplotlib.gridspec as gridspec
+import matplotlib.gridspec as gridspec
 
 os.system("cls" if os.name == "nt" else "clear")
 
@@ -216,16 +216,16 @@ plt.plot((-posscale, posscale), (lmda, lmda), 'r--')
 plt.subplot(2, 2, 2)
 plt.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
 plt.xlabel("Relative position (um)")
-plt.ylabel("Intensity (arb. units)")
+plt.ylabel("Wavelength (nm)")
 
 plt.subplot(2, 2, 3)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 plt.xlabel("Relative position (um)")
-plt.ylabel("Intensity (arb. units)")
+plt.ylabel("% Change in Intensity")
 
 plt.subplot(2, 2, 4)
 plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Relative position (um)")
+plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
 
 plt.show()
@@ -233,37 +233,37 @@ plt.show()
 
 
 ################## Plot data ##################
-#gs = gridspec.GridSpec(2, 2, width_ratios=[1,1], height_ratios=[1,1])	
+gs = gridspec.GridSpec(2, 2, width_ratios=[1,1], height_ratios=[1,1])	
 
-#a = plt.subplot(gs[0])
-#b = plt.subplot(gs[1])
-#c = plt.subplot(gs[2])
-#d = plt.subplot(gs[3])
+a = plt.subplot(gs[0])
+b = plt.subplot(gs[1])
+c = plt.subplot(gs[2])
+d = plt.subplot(gs[3])
 
-#plt.suptitle("Raw/Normalized Plot for " + str(user_input1), fontsize=14, fontweight='bold')
-#cs1 = a.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
-#a.set_title("Raw Plot")
-#a.set_xlabel("Relative position (um)")
-#a.set_ylabel("Wavelength (nm)")
-#a.plot((-posscale, posscale), (lmda, lmda), 'r--')
-#plt.colorbar(cs1, ax=a)
+plt.suptitle("Raw/Normalized Plot for " + str(user_input1), fontsize=14, fontweight='bold')
+cs1 = a.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
+a.set_title("Raw Plot")
+a.set_xlabel("Relative position (um)")
+a.set_ylabel("Wavelength (nm)")
+a.plot((-posscale, posscale), (lmda, lmda), 'r--')
+plt.colorbar(cs1, ax=a)
 
-#b.set_title("Normalization Spectrum")
-#b.set_xlabel("Wavelength (nm)")
-#b.set_ylabel("Intensity (arb. units)")
-#b.plot(wavelengthsCr, NormSpecSmCr[0])
+b.set_title("Normalization Spectrum")
+b.set_xlabel("Wavelength (nm)")
+b.set_ylabel("Intensity (arb. units)")
+b.plot(wavelengthsCr, NormSpecSmCr[0])
 
-#cs2 = c.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
-#c.set_title("Normalized Plot")
-#c.set_xlabel("Relative position (um)")
-#c.set_ylabel("Wavelength (nm)")
-#c.plot((-posscale, posscale), (lmda, lmda), 'r--')
-#plt.colorbar(cs2, ax=c)
+cs2 = c.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
+c.set_title("Normalized Plot")
+c.set_xlabel("Relative position (um)")
+c.set_ylabel("Wavelength (nm)")
+c.plot((-posscale, posscale), (lmda, lmda), 'r--')
+plt.colorbar(cs2, ax=c)
 
-#d.set_title("Normalized Spectrum at " + str(lmda) + " nm")
-#d.set_xlabel("Relative position (um)")
-#d.set_ylabel("Intensity (arb. units)")
-#d.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+d.set_title("Normalized Spectrum at " + str(lmda) + " nm")
+d.set_xlabel("Relative position (um)")
+d.set_ylabel("Intensity (arb. units)")
+d.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 
-#plt.show()
+plt.show()
 ######################################################
