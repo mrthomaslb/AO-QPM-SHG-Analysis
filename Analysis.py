@@ -25,24 +25,11 @@ print("---------------------------------------------------")
 print
 
 #### FUNCTIONS ####
-def SmoothData(position_array, wavelength_array, intensity_array):
+def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
 
 	# Create temporary list for value handling
 	new_list = []
-
-	# Prompt user input of smoothing factor
-	print
-	print("Length of input array = " + str(len(wavelength_array[0])))
-	smooth_factor = input("Smoothing factor: ")
-
-	# Check if smoothing factor is within reasonable bounds
-	while smooth_factor > len(wavelength_array[0]):
-		smooth_factor = input("Choose smoothing factor less than length of array: ")
-
-	# Check if smoothing factor is integer type
-	while smooth_factor != int(smooth_factor):
-		smooth_factor = input("Choose smoothing factor that is integer type: ")
 
 	# Calculate edge pixels to avoid smoothing
 	edge_pixels = (smooth_factor - 1) // 2
@@ -137,58 +124,6 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 	wavelength_array = np.transpose(wavelength_array)
 
 	return wavelength_array, intensity_array, P_min, spectrum_array
-
-def SmoothSpectrum(intensity_array):
-	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
-
-	# Create temporary list for value handling
-	new_list = []
-
-	smooth_factor = 11
-
-	# Calculate edge pixels to avoid smoothing
-	edge_pixels = (smooth_factor - 1) // 2
-
-	# Initialize sum and average
-	current_sum = 0
-	average = 0
-
-	# Place front edge values into list
-	for i in range(edge_pixels):
-		new_list.append(intensity_array[i])
-
-	# Place values of interest into smoothing algorithm
-	for i in range(edge_pixels, len(intensity_array)-edge_pixels):
-
-		# Slice the array around the pixels of interest
-		slice_array = intensity_array[i-edge_pixels:i+edge_pixels+1]
-
-		# Average the sliced array into one value
-		for j in range(0, len(slice_array)):
-			current_sum = current_sum + slice_array[j]
-			average = current_sum / smooth_factor
-
-		# Place averaged value into output list
-		new_list.append(average)
-
-		# Reset sum and average
-		current_sum = 0
-		average = 0
-
-	# Place rear edge values into list
-	for i in range(edge_pixels):
-		new_list.append(intensity_array[len(intensity_array)-edge_pixels+i])
-
-	# Convert list into array
-	intensity_array = np.asarray(new_list)
- 
- 	# Subtract dark count offset
-	offset = intensity_array[len(intensity_array)-1000:len(intensity_array)]
-	offsetmean = np.mean(offset)
-	intensity_array -= offsetmean
-
-	# Return smoothed intensity array
-	return intensity_array
 ########################
 
 ################## Read in data ##################
@@ -221,15 +156,30 @@ DeltaInt = np.transpose(DeltaInt)
 lmda = int(raw_input("Select wavelength for relative position lineout: "))
 
 pixel=wavel_to_pixel(lmda)
+
+# Prompt user input of smoothing factor
+print
+print("Length of input array = " + str(len(wavelengths[0])))
+smooth_factor = input("Smoothing factor: ")
+
+# Check if smoothing factor is within reasonable bounds
+while smooth_factor > len(wavelengths[0]):
+	smooth_factor = input("Choose smoothing factor less than length of array: ")
+
+# Check if smoothing factor is integer type
+while smooth_factor != int(smooth_factor):
+	smooth_factor = input("Choose smoothing factor that is integer type: ")
 ######################################################
 
 ################## Smooth data ##################
-DeltaIntSm = SmoothData(positions, wavelengths, DeltaInt)
+DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
 ######################################################
 print("Smoothed")
 
 ################## Smooth normalization spectrum ##################
-NormSpecSm = SmoothSpectrum(NormSpec)
+NormSpecSm = Smooth(positions, wavelengths, NormSpec, smooth_factor)
+#I just made the position_array and wavelength_array variables that I passed in
+#the same as when I smoothed the data, but I don't know if this is correct.
 ######################################################
 print("Smoothed Spectrum")
 
