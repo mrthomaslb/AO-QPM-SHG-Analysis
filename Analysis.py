@@ -212,21 +212,25 @@ plt.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winte
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 plt.plot((-posscale, posscale), (lmda, lmda), 'r--')
+plt.title('Raw Spectrum')
 
 plt.subplot(2, 2, 2)
 plt.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
+plt.title('Normalized Spectrum')
 
 plt.subplot(2, 2, 3)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 plt.xlabel("Relative position (um)")
 plt.ylabel("% Change in Intensity")
+plt.title(str(lmda)+ 'nm Lineout')
 
 plt.subplot(2, 2, 4)
 plt.plot(wavelengthsCr[0], NormSpecSmCr)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
+plt.title('WOCP Spectrum')
 
 plt.show()
 ######################################################
