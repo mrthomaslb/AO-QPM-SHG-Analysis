@@ -13,6 +13,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 #import matplotlib.gridspec as gridspec
+import tkFileDialog
 
 os.system("cls" if os.name == "nt" else "clear")
 
@@ -127,8 +128,10 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 ########################
 
 ################## Read in data ##################
-user_input1 = raw_input("A file: ")
-user_input2 = raw_input("B file: ")
+print('Please select the A File.')
+user_input1 = tkFileDialog.askopenfile()
+print('Please select the B File.')
+user_input2 = tkFileDialog.askopenfile()
 
 raw_data = np.loadtxt(user_input1)
 
@@ -212,21 +215,25 @@ plt.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winte
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 plt.plot((-posscale, posscale), (lmda, lmda), 'r--')
+plt.title('Raw Spectrum')
 
 plt.subplot(2, 2, 2)
 plt.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
 plt.xlabel("Relative position (um)")
-plt.ylabel("Intensity (arb. units)")
+plt.ylabel("Wavelength (nm)")
+plt.title('Normalized Spectrum')
 
 plt.subplot(2, 2, 3)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 plt.xlabel("Relative position (um)")
-plt.ylabel("Intensity (arb. units)")
+plt.ylabel("% Change in Intensity")
+plt.title(str(lmda) + 'nm Lineout')
 
 plt.subplot(2, 2, 4)
 plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Relative position (um)")
+plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
+plt.title('WOCP Spectrum')
 
 plt.show()
 ######################################################
