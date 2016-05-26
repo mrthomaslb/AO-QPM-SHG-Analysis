@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue May 24 09:18:45 2016
-
 @author: amylytle
 """
 
@@ -12,7 +11,7 @@ import os
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
+#import matplotlib.gridspec as gridspec
 
 os.system("cls" if os.name == "nt" else "clear")
 
@@ -91,14 +90,14 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 	""" This function accepts a wavelength and intensity array and returns a sliced wavelength and intensity array """
 
 	# Specify minimum wavelength
-	print
-	min_wavelength = input("Select minimum wavelength above 348.9 nm and below 561.7 nm: ")
+	#print
+	min_wavelength = 395#input("Select minimum wavelength above 348.9 nm and below 561.7 nm: ")
 	while min_wavelength < 348.9 or min_wavelength > 561.7:
 		min_wavelength = input("ERROR! Minimum wavelength must be above 348.9 nm and below 561.7 nm: ")
 
 	# Specify maximum wavelength
-	print
-	max_wavelength = input("Select maximum wavelength above 348.9 nm and below 561.7 nm: ")
+	#print
+	max_wavelength = 415#input("Select maximum wavelength above 348.9 nm and below 561.7 nm: ")
 	while max_wavelength < 348.9 or max_wavelength > 561.7:
 		max_wavelength = input("ERROR! Maximum wavelength must be above 348.9 nm and below 561.7 nm: ")
 
@@ -127,8 +126,10 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 ########################
 
 ################## Read in data ##################
-user_input1 = raw_input("A file: ")
-user_input2 = raw_input("B file: ")
+user_input1 = 'scan3a' #raw_input("A file: ")
+user_input2 = 'scan3b' #raw_input("B file: ")
+
+
 
 raw_data = np.loadtxt(user_input1)
 
@@ -153,14 +154,14 @@ positions = np.transpose(positions)
 
 DeltaInt = np.transpose(DeltaInt)
 
-lmda = int(raw_input("Select wavelength for relative position lineout: "))
+lmda = 407 #int(raw_input("Select wavelength for relative position lineout: "))
 
 pixel=wavel_to_pixel(lmda)
 
 # Prompt user input of smoothing factor
 print
 print("Length of input array = " + str(len(wavelengths[0])))
-smooth_factor = input("Smoothing factor: ")
+smooth_factor = 11 #input("Smoothing factor: ")
 
 # Check if smoothing factor is within reasonable bounds
 while smooth_factor > len(wavelengths[0]):
@@ -189,85 +190,93 @@ wavelengthsCr = CroppedData[0]
 DeltaIntSmCr = CroppedData[1]
 MinPixel = CroppedData[2]
 NormSpecSmCr = CroppedData[3]
-######################################################
+#############################a#########################
 print("Cropped")
 
+
 ################## Normalize data ##################
-DeltaIntSmCrNorm = np.transpose(DeltaIntSmCr)
+temp = np.transpose(DeltaIntSmCr)
 
-for i in range(len(DeltaIntSmCrNorm)):
-	DeltaIntSmCrNorm[i] = DeltaIntSmCrNorm[i] / NormSpecSmCr
+for i in range(len(temp)):
+	temp[i] = temp[i] / NormSpecSmCr
 
-DeltaIntNorm = np.transpose(DeltaIntSmCrNorm)
+DeltaIntNorm= np.transpose(temp)
+
 ######################################################
 print("Normalized")
 
-#fig1 = plt.figure()
-#ax1 = fig1.add_subplot(111)
-#im1 = ax1.imshow(DeltaIntSmCr,vmin=DeltaIntSmCr.min(),vmax=DeltaIntSmCr.max())
-#plt.show()
+
 ################## Plot data ##################
-plt.subplot(2, 2, 1)
-plt.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
+xmin=-1 #positions[0].min()
+xmax=1 #positions[0].max()
+
+ymin=wavelengthsCr[0].min()
+ymax=wavelengthsCr[0].max()
+
+
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(221)
+im1 = ax1.imshow(DeltaIntSmCr[:,0:199], vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
+     origin='lower', extent=[xmin, xmax, ymin, ymax])
+ax1.set_aspect((xmax-xmin)/(ymax-ymin))
+plt.colorbar(im1)
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
-plt.plot((-posscale, posscale), (lmda, lmda), 'r--')
-plt.title('Raw Spectrum')
 
-plt.subplot(2, 2, 2)
-plt.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
+ax2 = fig1.add_subplot(222)
+im2 = ax2.imshow(DeltaIntNorm[:,0:199], vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
+     origin='lower', extent=[xmin, xmax, ymin, ymax])
+ax2.set_aspect((xmax-xmin)/(ymax-ymin))
+plt.colorbar(im2)
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
-plt.title('Normalized Spectrum')
 
-plt.subplot(2, 2, 3)
+ax3 = fig1.add_subplot(223)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+plt.xlim(8,10)
 plt.xlabel("Relative position (um)")
-plt.ylabel("% Change in Intensity")
-plt.title(str(lmda)+ 'nm Lineout')
-
-plt.subplot(2, 2, 4)
-plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
-plt.title('WOCP Spectrum')
 
+ax4 = fig1.add_subplot(224)
+plt.plot(wavelengthsCr[0], NormSpecSmCr)
+plt.xlabel("Relative position (um)")
+plt.ylabel("Intensity (arb. units)")
 plt.show()
 ######################################################
 
 
 ################## Plot data ##################
-gs = gridspec.GridSpec(2, 2, width_ratios=[1,1], height_ratios=[1,1])	
+#gs = gridspec.GridSpec(2, 2, width_ratios=[1,1], height_ratios=[1,1])	
 
-a = plt.subplot(gs[0])
-b = plt.subplot(gs[1])
-c = plt.subplot(gs[2])
-d = plt.subplot(gs[3])
+#a = plt.subplot(gs[0])
+#b = plt.subplot(gs[1])
+#c = plt.subplot(gs[2])
+#d = plt.subplot(gs[3])
 
-plt.suptitle("Raw/Normalized Plot for " + str(user_input1), fontsize=14, fontweight='bold')
-cs1 = a.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
-a.set_title("Raw Plot")
-a.set_xlabel("Relative position (um)")
-a.set_ylabel("Wavelength (nm)")
-a.plot((-posscale, posscale), (lmda, lmda), 'r--')
-plt.colorbar(cs1, ax=a)
+#plt.suptitle("Raw/Normalized Plot for " + str(user_input1), fontsize=14, fontweight='bold')
+#cs1 = a.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
+#a.set_title("Raw Plot")
+#a.set_xlabel("Relative position (um)")
+#a.set_ylabel("Wavelength (nm)")
+#a.plot((-posscale, posscale), (lmda, lmda), 'r--')
+#plt.colorbar(cs1, ax=a)
 
-b.set_title("Normalization Spectrum")
-b.set_xlabel("Wavelength (nm)")
-b.set_ylabel("Intensity (arb. units)")
-b.plot(wavelengthsCr, NormSpecSmCr[0])
+#b.set_title("Normalization Spectrum")
+#b.set_xlabel("Wavelength (nm)")
+#b.set_ylabel("Intensity (arb. units)")
+#b.plot(wavelengthsCr, NormSpecSmCr[0])
 
-cs2 = c.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
-c.set_title("Normalized Plot")
-c.set_xlabel("Relative position (um)")
-c.set_ylabel("Wavelength (nm)")
-c.plot((-posscale, posscale), (lmda, lmda), 'r--')
-plt.colorbar(cs2, ax=c)
+#cs2 = c.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
+#c.set_title("Normalized Plot")
+#c.set_xlabel("Relative position (um)")
+#c.set_ylabel("Wavelength (nm)")
+#c.plot((-posscale, posscale), (lmda, lmda), 'r--')
+#plt.colorbar(cs2, ax=c)
 
-d.set_title("Normalized Spectrum at " + str(lmda) + " nm")
-d.set_xlabel("Relative position (um)")
-d.set_ylabel("Intensity (arb. units)")
-d.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+#d.set_title("Normalized Spectrum at " + str(lmda) + " nm")
+#d.set_xlabel("Relative position (um)")
+#d.set_ylabel("Intensity (arb. units)")
+#d.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 
-plt.show()
+#plt.show()
 ######################################################
