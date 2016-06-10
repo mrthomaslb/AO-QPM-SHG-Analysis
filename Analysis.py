@@ -145,7 +145,7 @@ scan_length = m - 2
 
 DeltaInt = raw_data[0:scan_length]
 wavelengths = raw_data[scan_length:scan_length+1]
-positions = raw_data[scan_length+1:scan_length+2]
+positions = raw_data[scan_length+1:scan_length+2]*1.38
 
 positions = np.transpose(positions)
 positions = positions[0:scan_length]
