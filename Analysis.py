@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue May 24 09:18:45 2016
-
 @author: amylytle
 """
 
@@ -146,7 +145,7 @@ scan_length = m - 2
 
 DeltaInt = raw_data[0:scan_length]
 wavelengths = raw_data[scan_length:scan_length+1]
-positions = raw_data[scan_length+1:scan_length+2]
+positions = raw_data[scan_length+1:scan_length+2]*1.38
 
 positions = np.transpose(positions)
 positions = positions[0:scan_length]
@@ -196,81 +195,52 @@ NormSpecSmCr = CroppedData[3]
 print("Cropped")
 
 ################## Normalize data ##################
-DeltaIntSmCrNorm = np.transpose(DeltaIntSmCr)
+temp = np.zeros_like(DeltaIntSmCr)
+temp = np.transpose(temp)
+temp2 = np.transpose(DeltaIntSmCr)
 
-for i in range(len(DeltaIntSmCrNorm)):
-	DeltaIntSmCrNorm[i] = DeltaIntSmCrNorm[i] / NormSpecSmCr
+for i in range(len(temp)):
+	temp[i] = temp2[i] / NormSpecSmCr
 
-DeltaIntNorm = np.transpose(DeltaIntSmCrNorm)
+DeltaIntNorm = np.transpose(temp)
 ######################################################
 print("Normalized")
 
-#fig1 = plt.figure()
-#ax1 = fig1.add_subplot(111)
-#im1 = ax1.imshow(DeltaIntSmCr,vmin=DeltaIntSmCr.min(),vmax=DeltaIntSmCr.max())
-#plt.show()
+
+
 ################## Plot data ##################
-plt.subplot(2, 2, 1)
-plt.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
+xmin=positions[0].min()
+xmax=positions[0].max()
+
+ymin=wavelengthsCr[0].min()
+ymax=wavelengthsCr[0].max()
+
+
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(221)
+im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
+     origin='lower', extent=[xmin, xmax, ymin, ymax])
+ax1.set_aspect((xmax-xmin)/(ymax-ymin))
+plt.colorbar(im1)
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
-plt.plot((-posscale, posscale), (lmda, lmda), 'r--')
-plt.title('Raw Spectrum')
 
-plt.subplot(2, 2, 2)
-plt.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
+ax2 = fig1.add_subplot(222)
+im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
+     origin='lower', extent=[xmin, xmax, ymin, ymax])
+ax2.set_aspect((xmax-xmin)/(ymax-ymin))
+plt.colorbar(im2)
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
-plt.title('Normalized Spectrum')
 
-plt.subplot(2, 2, 3)
+ax3 = fig1.add_subplot(223)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 plt.xlabel("Relative position (um)")
-plt.ylabel("% Change in Intensity")
-plt.title(str(lmda) + 'nm Lineout')
-
-plt.subplot(2, 2, 4)
-plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
-plt.title('WOCP Spectrum')
 
+ax4 = fig1.add_subplot(224)
+plt.plot(wavelengthsCr[0], NormSpecSmCr)
+plt.xlabel("Relative position (um)")
+plt.ylabel("Intensity (arb. units)")
 plt.show()
-######################################################
-
-
-################## Plot data ##################
-#gs = gridspec.GridSpec(2, 2, width_ratios=[1,1], height_ratios=[1,1])	
-
-#a = plt.subplot(gs[0])
-#b = plt.subplot(gs[1])
-#c = plt.subplot(gs[2])
-#d = plt.subplot(gs[3])
-
-#plt.suptitle("Raw/Normalized Plot for " + str(user_input1), fontsize=14, fontweight='bold')
-#cs1 = a.contourf(positions[0], wavelengthsCr[0], DeltaIntSmCr, 50, cmap=plt.cm.winter)
-#a.set_title("Raw Plot")
-#a.set_xlabel("Relative position (um)")
-#a.set_ylabel("Wavelength (nm)")
-#a.plot((-posscale, posscale), (lmda, lmda), 'r--')
-#plt.colorbar(cs1, ax=a)
-
-#b.set_title("Normalization Spectrum")
-#b.set_xlabel("Wavelength (nm)")
-#b.set_ylabel("Intensity (arb. units)")
-#b.plot(wavelengthsCr, NormSpecSmCr[0])
-
-#cs2 = c.contourf(positions[0], wavelengthsCr[0], DeltaIntNorm, 50, cmap=plt.cm.winter)
-#c.set_title("Normalized Plot")
-#c.set_xlabel("Relative position (um)")
-#c.set_ylabel("Wavelength (nm)")
-#c.plot((-posscale, posscale), (lmda, lmda), 'r--')
-#plt.colorbar(cs2, ax=c)
-
-#d.set_title("Normalized Spectrum at " + str(lmda) + " nm")
-#d.set_xlabel("Relative position (um)")
-#d.set_ylabel("Intensity (arb. units)")
-#d.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
-
-#plt.show()
 ######################################################
