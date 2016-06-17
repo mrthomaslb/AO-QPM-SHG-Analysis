@@ -195,19 +195,22 @@ NormSpecSmCr = CroppedData[3]
 print("Cropped")
 
 ################## Normalize data ##################
-DeltaIntSmCrNorm = np.transpose(DeltaIntSmCr)
+temp = np.zeros_like(DeltaIntSmCr)
+temp = np.transpose(temp)
+temp2 = np.transpose(DeltaIntSmCr)
 
-for i in range(len(DeltaIntSmCrNorm)):
-	DeltaIntSmCrNorm[i] = DeltaIntSmCrNorm[i] / NormSpecSmCr
+for i in range(len(temp)):
+	temp[i] = temp2[i] / NormSpecSmCr
 
-DeltaIntNorm = np.transpose(DeltaIntSmCrNorm)
+DeltaIntNorm = np.transpose(temp)
 ######################################################
 print("Normalized")
 
 
+
 ################## Plot data ##################
-xmin=-1 #positions[0].min()
-xmax=1 #positions[0].max()
+xmin=positions[0].min()
+xmax=positions[0].max()
 
 ymin=wavelengthsCr[0].min()
 ymax=wavelengthsCr[0].max()
@@ -215,7 +218,7 @@ ymax=wavelengthsCr[0].max()
 
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(221)
-im1 = ax1.imshow(DeltaIntSmCr[:,0:199], vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
+im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
      origin='lower', extent=[xmin, xmax, ymin, ymax])
 ax1.set_aspect((xmax-xmin)/(ymax-ymin))
 plt.colorbar(im1)
@@ -223,7 +226,7 @@ plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 
 ax2 = fig1.add_subplot(222)
-im2 = ax2.imshow(DeltaIntNorm[:,0:199], vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
+im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
      origin='lower', extent=[xmin, xmax, ymin, ymax])
 ax2.set_aspect((xmax-xmin)/(ymax-ymin))
 plt.colorbar(im2)
