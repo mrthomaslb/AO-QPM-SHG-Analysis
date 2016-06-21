@@ -47,12 +47,12 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	for i in range(len(position_array)):
 		for j in range(edge_pixels, len(intensity_array)-edge_pixels):
 
-			# Slice the array around the pixels of interest
-			slice_array = intensity_array[j-edge_pixels:j+edge_pixels+1]
+			# Crop the array around the pixels of interest
+			crop_array = intensity_array[j-edge_pixels:j+edge_pixels+1]
 
-			# Average the sliced array into one value
-			for k in range(0, len(slice_array)):
-				current_sum = current_sum + slice_array[k]
+			# Average crop_array into one value
+			for k in range(0, len(crop_array)):
+				current_sum = current_sum + crop_array[k]
 			average = current_sum / smooth_factor
 
 			# Place averaged value into output list
@@ -69,6 +69,10 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 
 	# Convert list into array
 	intensity_array = np.asarray(new_list)
+ 
+	#Reduce noise by subtracting to zero
+	offsetvalue = np.mean(intensity_array[0:387]) #387 is the pixel for 375 nm
+	intensity_array -= offsetvalue 
 
 	# Return smoothed intensity array
 	return intensity_array
@@ -173,17 +177,13 @@ while smooth_factor != int(smooth_factor):
 	smooth_factor = input("Choose smoothing factor that is integer type: ")
 ######################################################
 
-################## Smooth data ##################
+################## Smooth data & normalization spectrum ##################
 DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
-######################################################
 print("Smoothed")
 
-################## Smooth normalization spectrum ##################
 NormSpecSm = Smooth(positions, wavelengths, NormSpec, smooth_factor)
-#I just made the position_array and wavelength_array variables that I passed in
-#the same as when I smoothed the data, but I don't know if this is correct.
-######################################################
 print("Smoothed Spectrum")
+###########################################################################
 
 ################## Crop data ##################
 CroppedData = CropData(wavelengths, DeltaIntSm, NormSpecSm)
