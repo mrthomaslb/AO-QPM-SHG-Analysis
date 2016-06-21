@@ -236,11 +236,11 @@ plt.ylabel("Wavelength (nm)")
 ax3 = fig1.add_subplot(223)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
 plt.xlabel("Relative position (um)")
-plt.ylabel("Intensity (arb. units)")
+plt.ylabel("% Change in Intensity")
 
 ax4 = fig1.add_subplot(224)
 plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Relative position (um)")
+plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
 plt.show()
 ######################################################
