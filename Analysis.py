@@ -155,7 +155,15 @@ positions = np.transpose(positions)
 
 DeltaInt = np.transpose(DeltaInt)
 
-lmda = int(raw_input("Select wavelength for relative position lineout: "))
+lmda1 = 402 #int(raw_input("Select wavelength for relative position lineout: "))
+lmda2 = 404
+lmda3 = 410
+lmda4 = 420
+
+pixel1=wavel_to_pixel(lmda1)
+pixel2=wavel_to_pixel(lmda2)
+pixel3=wavel_to_pixel(lmda3)
+pixel4=wavel_to_pixel(lmda4)
 
 pixel=wavel_to_pixel(lmda)
 
@@ -206,7 +214,20 @@ DeltaIntNorm = np.transpose(temp)
 ######################################################
 print("Normalized")
 
-
+################## Save data to file ##################
+lineout1 = DeltaIntNorm[pixel1-MinPixel]
+lineout2 = DeltaIntNorm[pixel2-MinPixel]
+lineout3 = DeltaIntNorm[pixel3-MinPixel]
+lineout4 = DeltaIntNorm[pixel4-MinPixel]
+len = np.shape(lineout1)
+lineouts = np.zeros((len[0],5))
+lineouts[:,1] = lineout1
+lineouts[:,2] = lineout2
+lineouts[:,3] = lineout3
+lineouts[:,4] = lineout4
+lineouts[:,0] = positions[0]
+np.savetxt("./lineouts.dat",lineouts)
+######################################################
 
 ################## Plot data ##################
 xmin=positions[0].min()
@@ -234,7 +255,7 @@ plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 
 ax3 = fig1.add_subplot(223)
-plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+plt.plot(positions[0], DeltaIntNorm[pixel1-MinPixel])
 plt.xlabel("Relative position (um)")
 plt.ylabel("% Change in Intensity")
 
