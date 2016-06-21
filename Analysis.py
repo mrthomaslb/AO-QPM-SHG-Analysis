@@ -10,8 +10,6 @@ Created on Tue May 24 09:18:45 2016
 import os
 import math
 import numpy as np
-import matplotlib.pyplot as plt
-#import matplotlib.gridspec as gridspec
 import tkFileDialog
 
 os.system("cls" if os.name == "nt" else "clear")
@@ -165,7 +163,7 @@ pixel2=wavel_to_pixel(lmda2)
 pixel3=wavel_to_pixel(lmda3)
 pixel4=wavel_to_pixel(lmda4)
 
-pixel=wavel_to_pixel(lmda)
+pixel=wavel_to_pixel(lmda1)
 
 # Prompt user input of smoothing factor
 print
@@ -214,6 +212,10 @@ DeltaIntNorm = np.transpose(temp)
 ######################################################
 print("Normalized")
 
+#Determining filename  
+scan_number = raw_input('Scan #: ')
+filename = './scan' + scan_number + 'lineouts.dat'
+
 ################## Save data to file ##################
 lineout1 = DeltaIntNorm[pixel1-MinPixel]
 lineout2 = DeltaIntNorm[pixel2-MinPixel]
@@ -226,42 +228,5 @@ lineouts[:,2] = lineout2
 lineouts[:,3] = lineout3
 lineouts[:,4] = lineout4
 lineouts[:,0] = positions[0]
-np.savetxt("./lineouts.dat",lineouts)
-######################################################
-
-################## Plot data ##################
-xmin=positions[0].min()
-xmax=positions[0].max()
-
-ymin=wavelengthsCr[0].min()
-ymax=wavelengthsCr[0].max()
-
-
-fig1 = plt.figure()
-ax1 = fig1.add_subplot(221)
-im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
-     origin='lower', extent=[xmin, xmax, ymin, ymax])
-ax1.set_aspect((xmax-xmin)/(ymax-ymin))
-plt.colorbar(im1)
-plt.xlabel("Relative position (um)")
-plt.ylabel("Wavelength (nm)")
-
-ax2 = fig1.add_subplot(222)
-im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
-     origin='lower', extent=[xmin, xmax, ymin, ymax])
-ax2.set_aspect((xmax-xmin)/(ymax-ymin))
-plt.colorbar(im2)
-plt.xlabel("Relative position (um)")
-plt.ylabel("Wavelength (nm)")
-
-ax3 = fig1.add_subplot(223)
-plt.plot(positions[0], DeltaIntNorm[pixel1-MinPixel])
-plt.xlabel("Relative position (um)")
-plt.ylabel("% Change in Intensity")
-
-ax4 = fig1.add_subplot(224)
-plt.plot(wavelengthsCr[0], NormSpecSmCr)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Intensity (arb. units)")
-plt.show()
+np.savetxt(filename,lineouts)
 ######################################################
