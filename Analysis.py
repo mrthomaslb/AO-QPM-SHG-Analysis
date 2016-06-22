@@ -70,10 +70,6 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	# Convert list into array
 	intensity_array = np.asarray(new_list)
  
-	#Reduce noise by subtracting to zero
-	offsetvalue = np.mean(intensity_array[0:387]) #387 is the pixel for 375 nm
-	intensity_array -= offsetvalue 
-
 	# Return smoothed intensity array
 	return intensity_array
 
@@ -183,6 +179,11 @@ print("Smoothed")
 
 NormSpecSm = Smooth(positions, wavelengths, NormSpec, smooth_factor)
 print("Smoothed Spectrum")
+
+#Reduce noise by subtracting to 10
+offsetvalue = np.mean(NormSpecSm[0:387]) #387 is the pixel for 375 nm
+NormSpecSm -= offsetvalue
+#NormSpecSm += 50
 ###########################################################################
 
 ################## Crop data ##################
@@ -205,8 +206,6 @@ for i in range(len(temp)):
 DeltaIntNorm = np.transpose(temp)
 ######################################################
 print("Normalized")
-
-
 
 ################## Plot data ##################
 xmin=positions[0].min()
