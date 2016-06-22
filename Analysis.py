@@ -67,6 +67,10 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 
 	# Convert list into array
 	intensity_array = np.asarray(new_list)
+	
+	#Reduce noise by subtracting to zero
+	offsetvalue = np.mean(intensity_array[0:387]) #387 is the pixel for 375 nm
+	intensity_array -= offsetvalue 
 
 	# Return smoothed intensity array
 	return intensity_array
