@@ -221,6 +221,7 @@ im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(),
      origin='lower', extent=[xmin, xmax, ymin, ymax])
 ax1.set_aspect((xmax-xmin)/(ymax-ymin))
 plt.colorbar(im1)
+plt.title('Raw Spectrum')
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 
@@ -229,16 +230,19 @@ im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(),
      origin='lower', extent=[xmin, xmax, ymin, ymax])
 ax2.set_aspect((xmax-xmin)/(ymax-ymin))
 plt.colorbar(im2)
+plt.title('Normalized Spectrum')
 plt.xlabel("Relative position (um)")
 plt.ylabel("Wavelength (nm)")
 
 ax3 = fig1.add_subplot(223)
 plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+plt.title('%s nm Lineout' % lmda)
 plt.xlabel("Relative position (um)")
 plt.ylabel("% Change in Intensity")
 
 ax4 = fig1.add_subplot(224)
 plt.plot(wavelengthsCr[0], NormSpecSmCr)
+plt.title('WOCP Spectrum')
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
 plt.show()
