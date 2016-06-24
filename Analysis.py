@@ -11,7 +11,6 @@ import os
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-#import matplotlib.gridspec as gridspec
 import tkFileDialog
 
 os.system("cls" if os.name == "nt" else "clear")
@@ -88,7 +87,7 @@ def wavel_to_pixel(wavelength):
 	return pixel
 
 def CropData(wavelength_array, intensity_array, spectrum_array):
-	""" This function accepts a wavelength and intensity array and returns a sliced wavelength and intensity array """
+	""" This function accepts a wavelength and intensity array and returns a cropped wavelength and intensity array """
 
 	# Specify minimum wavelength
 	print
@@ -110,18 +109,10 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 	P_min = wavel_to_pixel(min_wavelength)
 	P_max = wavel_to_pixel(max_wavelength)
 
-
-
-	# Transpose wavelength array for slicing
-	wavelength_array = np.transpose(wavelength_array)
-
-	# Slice arrays
+	# Crop arrays
 	intensity_array = intensity_array[P_min:P_max]
 	wavelength_array = wavelength_array[P_min:P_max]
  	spectrum_array = spectrum_array[P_min:P_max]
-
-	# Transpose wavelength array back to original transposition
-	wavelength_array = np.transpose(wavelength_array)
 
 	return wavelength_array, intensity_array, P_min, spectrum_array
 ########################
@@ -133,27 +124,22 @@ print('Please select the B File.')
 user_input2 = tkFileDialog.askopenfile()
 
 raw_data = np.loadtxt(user_input1)
-
 wocp = np.loadtxt(user_input2)
-wocp = np.transpose(wocp)
-NormSpec = wocp[0] #This is the spectrum we're normalizing to.
 
-m = raw_data.shape[0]
-n = raw_data.shape[1]
+scan_length = raw_data.shape[0] - 2
 
-scan_length = m - 2
-
-DeltaInt = raw_data[0:scan_length]
+#Disassembling the A File for useful parts
+DeltaInt = raw_data[0:scan_length] #DeltaInt is an array of the differences in intensity
 wavelengths = raw_data[scan_length:scan_length+1]
-positions = raw_data[scan_length+1:scan_length+2]*1.38
+positions = raw_data[scan_length+1:scan_length+2]*1.38 #Coefficient accounts for piezo error
 
-positions = np.transpose(positions)
-positions = positions[0:scan_length]
-pos=positions[scan_length-1]
-posscale=pos[0]
-positions = np.transpose(positions)
+positions = positions[:,0:scan_length] #Because there are more wavelengths than positions for any scan we do, we have to clip this down
 
-DeltaInt = np.transpose(DeltaInt)
+DeltaInt = np.transpose(DeltaInt) #now each column is a different spectrum, so it matches the B File data (3648x200)
+SpectraWOCP = np.zeros_like(DeltaInt)
+
+for i in range (0, scan_length):
+    SpectraWOCP[:,i] = wocp[:,2*i] #Do I have to return SpectraWOCP? I don't think so, but I'm uncertain.
 
 lmda = int(raw_input("Select wavelength for relative position lineout: "))
 
@@ -173,37 +159,33 @@ while smooth_factor != int(smooth_factor):
 	smooth_factor = input("Choose smoothing factor that is integer type: ")
 ######################################################
 
-################## Smooth data & normalization spectrum ##################
+################## Smooth data & normalization spectra ##################
 DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
 print("Smoothed")
 
-NormSpecSm = Smooth(positions, wavelengths, NormSpec, smooth_factor)
+SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor) #I haven't gone through the function rigorously, but given that this is the same shape as DeltaInt, this should be fine
 print("Smoothed Spectrum")
 
-#Reduce noise by subtracting to 10
-offsetvalue = np.mean(NormSpecSm[0:387]) #387 is the pixel for 375 nm
-NormSpecSm -= offsetvalue
-#NormSpecSm += 50
+#Reduce noise by subtracting to 0, but would subtract to 50 if you un-commented the last line here
+offsetvalue = np.mean(SpectraWOCPSm[0:387]) #387 is the pixel for 375 nm
+SpectraWOCPSm -= offsetvalue #offsetvalue is the average of all noise values from 350 nm to 375 nm for all the spectra taken in this scan
+#SpectraWOCPSm += 50
 ###########################################################################
 
 ################## Crop data ##################
-CroppedData = CropData(wavelengths, DeltaIntSm, NormSpecSm)
+CroppedData = CropData(np.transpose(wavelengths), DeltaIntSm, SpectraWOCP)
 wavelengthsCr = CroppedData[0]
 DeltaIntSmCr = CroppedData[1]
 MinPixel = CroppedData[2]
-NormSpecSmCr = CroppedData[3]
+SpectraWOCPSmCr = CroppedData[3]
 ######################################################
 print("Cropped")
 
 ################## Normalize data ##################
-temp = np.zeros_like(DeltaIntSmCr)
-temp = np.transpose(temp)
-temp2 = np.transpose(DeltaIntSmCr)
+DeltaIntNorm = np.zeros_like(DeltaIntSmCr)
 
-for i in range(len(temp)):
-	temp[i] = temp2[i] / NormSpecSmCr
-
-DeltaIntNorm = np.transpose(temp)
+for i in range(scan_length):
+    DeltaIntNorm[:,i] = DeltaIntSmCr[:,i] / SpectraWOCPSmCr[:,i]
 ######################################################
 print("Normalized")
 
@@ -211,8 +193,8 @@ print("Normalized")
 xmin=positions[0].min()
 xmax=positions[0].max()
 
-ymin=wavelengthsCr[0].min()
-ymax=wavelengthsCr[0].max()
+ymin=wavelengthsCr[:,0].min()
+ymax=wavelengthsCr[:,0].max()
 
 
 fig1 = plt.figure()
@@ -241,7 +223,7 @@ plt.xlabel("Relative position (um)")
 plt.ylabel("% Change in Intensity")
 
 ax4 = fig1.add_subplot(224)
-plt.plot(wavelengthsCr[0], NormSpecSmCr)
+plt.plot(wavelengthsCr[:,0], SpectraWOCPSmCr[:,0])
 plt.title('WOCP Spectrum')
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Intensity (arb. units)")
