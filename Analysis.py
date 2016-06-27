@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
+# -"""
 Created on Tue May 24 09:18:45 2016
 @author: amylytle
 """
@@ -11,7 +10,7 @@ import os
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import tkFileDialog
+from tkinter import filedialog
 
 os.system("cls" if os.name == "nt" else "clear")
 
@@ -91,13 +90,13 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 
 	# Specify minimum wavelength
 	print
-	min_wavelength = input("Select minimum wavelength above 348.9 nm and below 561.7 nm: ")
+	min_wavelength = float(input("Select minimum wavelength above 348.9 nm and below 561.7 nm: "))
 	while min_wavelength < 348.9 or min_wavelength > 561.7:
 		min_wavelength = input("ERROR! Minimum wavelength must be above 348.9 nm and below 561.7 nm: ")
 
 	# Specify maximum wavelength
 	print
-	max_wavelength = input("Select maximum wavelength above 348.9 nm and below 561.7 nm: ")
+	max_wavelength = float(input("Select maximum wavelength above 348.9 nm and below 561.7 nm: "))
 	while max_wavelength < 348.9 or max_wavelength > 561.7:
 		max_wavelength = input("ERROR! Maximum wavelength must be above 348.9 nm and below 561.7 nm: ")
 
@@ -112,16 +111,16 @@ def CropData(wavelength_array, intensity_array, spectrum_array):
 	# Crop arrays
 	intensity_array = intensity_array[P_min:P_max]
 	wavelength_array = wavelength_array[P_min:P_max]
- 	spectrum_array = spectrum_array[P_min:P_max]
+	spectrum_array = spectrum_array[P_min:P_max]
 
 	return wavelength_array, intensity_array, P_min, spectrum_array
 ########################
 
 ################## Read in data ##################
 print('Please select the A File.')
-user_input1 = tkFileDialog.askopenfile()
+user_input1 = filedialog.askopenfile()
 print('Please select the B File.')
-user_input2 = tkFileDialog.askopenfile()
+user_input2 = filedialog.askopenfile()
 
 raw_data = np.loadtxt(user_input1)
 wocp = np.loadtxt(user_input2)
@@ -141,14 +140,14 @@ SpectraWOCP = np.zeros_like(DeltaInt)
 for i in range (0, scan_length):
     SpectraWOCP[:,i] = wocp[:,2*i] #Do I have to return SpectraWOCP? I don't think so, but I'm uncertain.
 
-lmda = int(raw_input("Select wavelength for relative position lineout: "))
+lmda = int(input("Select wavelength for relative position lineout: "))
 
 pixel=wavel_to_pixel(lmda)
 
 # Prompt user input of smoothing factor
 print
 print("Length of input array = " + str(len(wavelengths[0])))
-smooth_factor = input("Smoothing factor: ")
+smooth_factor = int(input("Smoothing factor: "))
 
 # Check if smoothing factor is within reasonable bounds
 while smooth_factor > len(wavelengths[0]):
@@ -163,7 +162,7 @@ while smooth_factor != int(smooth_factor):
 DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
 print("Smoothed")
 
-SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor) #I haven't gone through the function rigorously, but given that this is the same shape as DeltaInt, this should be fine
+SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor)
 print("Smoothed Spectrum")
 
 #Reduce noise by subtracting to 0, but would subtract to 50 if you un-commented the last line here
