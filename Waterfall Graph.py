@@ -15,7 +15,7 @@ def lineout_to_array():
 
 pick = int(input("""Select one of the following:
     1: 402 nm (scans 11-21)
-    2: 414 nm (scans 2-10)
+    2: 404 nm (scans 2-10)
     3: 411 nm (scans 2-10)
 
 >>>"""))
