@@ -123,6 +123,11 @@ user_input1 = filedialog.askopenfile()
 print('Please select the B File.')
 user_input2 = filedialog.askopenfile()
 
+path = str(user_input1)
+position = path.find('scan')
+title = path[position-11:position+5]
+#I could do the same thing with the B File to check if the user selected non-matching files
+
 raw_data = np.loadtxt(user_input1)
 wocp = np.loadtxt(user_input2)
 
@@ -196,8 +201,9 @@ xmax=positions[0].max()
 ymin=wavelengthsCr[:,0].min()
 ymax=wavelengthsCr[:,0].max()
 
-
 fig1 = plt.figure()
+fig1.suptitle(title, fontsize=20)
+
 ax1 = fig1.add_subplot(221)
 im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
      origin='lower', extent=[xmin, xmax, ymin, ymax])
