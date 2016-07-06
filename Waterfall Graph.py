@@ -38,14 +38,17 @@ def cc(arg):
     return colorConverter.to_rgba(arg, alpha=0.6)
 
 verts = []
-phaseshift = 0
 
 for z in zs:
-    xs = list(np.arange(-1.38+phaseshift, 1.38+phaseshift, 0.0138))
-    phaseshift-=0.0138
+    xs = list(np.arange(-1.38, 1.38, 0.0138))
     zcounter += 1
     print('Select scan %d lineout' % zcounter)
-    ys = lineout_to_array()[:,1:2]
+    if pick==1:
+        ys = lineout_to_array()[:,0:1]
+    elif pick==2:
+        ys = lineout_to_array()[:,1:2]
+    else:
+        ys = lineout_to_array()[:,2]
     verts.append([(-1.38,0)]+list(zip(xs, ys))+[(1.382
     ,0)])
 
