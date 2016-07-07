@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Tue May 24 09:18:45 2016
 @author: amylytle
@@ -12,8 +12,16 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from tkinter import filedialog
+from matplotlib import rc
 
 os.system("cls" if os.name == "nt" else "clear")
+
+############################### VARIABLES ###############################
+lmdas = [406]        #must be between min_wavelength and max_wavelength
+smooth_factor = 11   #must be integer less than length of the array
+min_wavelength = 395 #wavelengths must be between 348.9 nm and 561.7 nm
+max_wavelength = 420 #max_wavelength must be greater than min_wavelength
+#########################################################################
 
 # Program header
 print("---------------------------------------------------")
@@ -21,8 +29,8 @@ print(" Analysis Program for Counterpropagating Scan Data")
 print(" Authors: R. Camuccio, T. Lehman-Borer, and A. Lytle")
 print(" Version: 2.0")
 print("---------------------------------------------------")
-print
-
+print()
+ 
 #### FUNCTIONS ####
 def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
@@ -33,9 +41,8 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 	# Calculate edge pixels to avoid smoothing
 	edge_pixels = (smooth_factor - 1) // 2
 
-	# Initialize sum and average
+	# Initialize sum
 	current_sum = 0
-	average = 0
 
 	# Place front edge values into list
 	for i in range(len(position_array)):
@@ -50,16 +57,16 @@ def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
 			crop_array = intensity_array[j-edge_pixels:j+edge_pixels+1]
 
 			# Average crop_array into one value
-			for k in range(0, len(crop_array)):
-				current_sum = current_sum + crop_array[k]
+			for k in range(smooth_factor):
+				current_sum += crop_array[k]
+			#current_sum = np.sum(crop_array) #Not sure why this doesn't work
 			average = current_sum / smooth_factor
 
 			# Place averaged value into output list
 			new_list.append(average)
 
-			# Reset sum and average
+			# Reset sum
 			current_sum = 0
-			average = 0
 
 	# Place rear edge values into list
 	for i in range(len(position_array)):
@@ -86,28 +93,12 @@ def wavel_to_pixel(wavelength):
      
 	return pixel
 
-def CropData(wavelength_array, intensity_array, spectrum_array):
+def CropData(wavelength_array, intensity_array, spectrum_array, min_wavel, max_wavel):
 	""" This function accepts a wavelength and intensity array and returns a cropped wavelength and intensity array """
 
-	# Specify minimum wavelength
-	print
-	min_wavelength = float(input("Select minimum wavelength above 348.9 nm and below 561.7 nm: "))
-	while min_wavelength < 348.9 or min_wavelength > 561.7:
-		min_wavelength = input("ERROR! Minimum wavelength must be above 348.9 nm and below 561.7 nm: ")
-
-	# Specify maximum wavelength
-	print
-	max_wavelength = float(input("Select maximum wavelength above 348.9 nm and below 561.7 nm: "))
-	while max_wavelength < 348.9 or max_wavelength > 561.7:
-		max_wavelength = input("ERROR! Maximum wavelength must be above 348.9 nm and below 561.7 nm: ")
-
-	# Check that minimum and maximum are correct with respect to each other
-	while max_wavelength <= min_wavelength:
-		max_wavelength = input("ERROR! Maximum wavelength must be greater than minimum wavelength. Select another: ")
-
 	# Calculation of minimum/maximum pixel number
-	P_min = wavel_to_pixel(min_wavelength)
-	P_max = wavel_to_pixel(max_wavelength)
+	P_min = wavel_to_pixel(min_wavel)
+	P_max = wavel_to_pixel(max_wavel)
 
 	# Crop arrays
 	intensity_array = intensity_array[P_min:P_max]
@@ -147,24 +138,16 @@ DeltaInt = np.transpose(DeltaInt) #now each column is a different spectrum, so i
 SpectraWOCP = np.zeros_like(DeltaInt)
 
 for i in range (0, scan_length):
-    SpectraWOCP[:,i] = wocp[:,2*i] #Do I have to return SpectraWOCP? I don't think so, but I'm uncertain.
+    SpectraWOCP[:,i] = wocp[:,2*i]
 
-lmda = int(input("Select wavelength for relative position lineout: "))
-
-pixel=wavel_to_pixel(lmda)
+pixels = []
+for lmda in lmdas:
+    pixel=wavel_to_pixel(lmda)
+    pixels.append(pixel)
 
 # Prompt user input of smoothing factor
 print
 print("Length of input array = " + str(len(wavelengths[0])))
-smooth_factor = int(input("Smoothing factor: "))
-
-# Check if smoothing factor is within reasonable bounds
-while smooth_factor > len(wavelengths[0]):
-	smooth_factor = input("Choose smoothing factor less than length of array: ")
-
-# Check if smoothing factor is integer type
-while smooth_factor != int(smooth_factor):
-	smooth_factor = input("Choose smoothing factor that is integer type: ")
 ######################################################
 
 ################## Smooth data & normalization spectra ##################
@@ -174,14 +157,13 @@ print("Smoothed")
 SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor)
 print("Smoothed Spectrum")
 
-#Reduce noise by subtracting to 0, but would subtract to 50 if you un-commented the last line here
+#Reduce noise by subtracting to 0
 offsetvalue = np.mean(SpectraWOCPSm[0:387]) #387 is the pixel for 375 nm
 SpectraWOCPSm -= offsetvalue #offsetvalue is the average of all noise values from 350 nm to 375 nm for all the spectra taken in this scan
-#SpectraWOCPSm += 50
 ###########################################################################
 
 ################## Crop data ##################
-CroppedData = CropData(np.transpose(wavelengths), DeltaIntSm, SpectraWOCP)
+CroppedData = CropData(np.transpose(wavelengths), DeltaIntSm, SpectraWOCP, min_wavelength, max_wavelength)
 wavelengthsCr = CroppedData[0]
 DeltaIntSmCr = CroppedData[1]
 MinPixel = CroppedData[2]
@@ -200,41 +182,44 @@ print("Normalized")
 ################## Plot data ##################
 xmin=positions[0].min()
 xmax=positions[0].max()
-
 ymin=wavelengthsCr[:,0].min()
 ymax=wavelengthsCr[:,0].max()
+lmda_count = 0
 
-fig1 = plt.figure()
-fig1.suptitle(title, fontsize=20)
+for pixel in pixels:
+    plt.rc('font.serif')
+    fig1 = plt.figure()
+    fig1.suptitle(title, fontsize=20)
+    
+    ax1 = fig1.add_subplot(221)
+    im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
+    origin='lower', extent=[xmin, xmax, ymin, ymax])
+    ax1.set_aspect((xmax-xmin)/(ymax-ymin))
+    plt.colorbar(im1)
+    plt.title('Raw Spectrum')
+    plt.xlabel(r'Relative position ($\mu$m)')
+    plt.ylabel("Wavelength (nm)")
 
-ax1 = fig1.add_subplot(221)
-im1 = ax1.imshow(DeltaIntSmCr, vmin=DeltaIntSmCr.min(), vmax=DeltaIntSmCr.max(), interpolation="hanning",
-     origin='lower', extent=[xmin, xmax, ymin, ymax])
-ax1.set_aspect((xmax-xmin)/(ymax-ymin))
-plt.colorbar(im1)
-plt.title('Raw Spectrum')
-plt.xlabel("Relative position (um)")
-plt.ylabel("Wavelength (nm)")
-
-ax2 = fig1.add_subplot(222)
-im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
-     origin='lower', extent=[xmin, xmax, ymin, ymax])
-ax2.set_aspect((xmax-xmin)/(ymax-ymin))
-plt.colorbar(im2)
-plt.title('Normalized Spectrum')
-plt.xlabel("Relative position (um)")
-plt.ylabel("Wavelength (nm)")
-
-ax3 = fig1.add_subplot(223)
-plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
-plt.title('%s nm Lineout' % lmda)
-plt.xlabel("Relative position (um)")
-plt.ylabel("% Change in Intensity")
-
-ax4 = fig1.add_subplot(224)
-plt.plot(wavelengthsCr[:,0], SpectraWOCPSmCr[:,0])
-plt.title('WOCP Spectrum')
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Intensity (arb. units)")
-plt.show()
+    ax2 = fig1.add_subplot(222)
+    im2 = ax2.imshow(DeltaIntNorm, vmin=DeltaIntNorm.min(), vmax=DeltaIntNorm.max(), interpolation="hanning",
+    origin='lower', extent=[xmin, xmax, ymin, ymax])
+    ax2.set_aspect((xmax-xmin)/(ymax-ymin))
+    plt.colorbar(im2)
+    plt.title('Normalized Spectrum')
+    plt.xlabel(r'Relative position ($\mu$m)')
+    plt.ylabel("Wavelength (nm)")
+                     
+    ax3 = fig1.add_subplot(223)
+    plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+    plt.title('%s nm Lineout' % lmdas[lmda_count])
+    plt.xlabel(r'Relative position ($\mu$m)')
+    plt.ylabel("% Change in Intensity")
+                     
+    ax4 = fig1.add_subplot(224)
+    plt.plot(wavelengthsCr[:,0], SpectraWOCPSmCr[:,0])
+    plt.title('WOCP Spectrum')
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel("Intensity (arb. units)")
+    plt.show()
+    lmda_count += 1
 ######################################################
