@@ -125,7 +125,10 @@ user_input2 = filedialog.askopenfile()
 
 path = str(user_input1)
 position = path.find('scan')
-title = path[position-11:position+5]
+if path[position+5]=='a':
+    title = path[position-11:position+5]
+else:
+    title = path[position-11:position+6 ]
 #I could do the same thing with the B File to check if the user selected non-matching files
 
 raw_data = np.loadtxt(user_input1)
