@@ -2,11 +2,9 @@
 
 ##README
 
-This program requires data input from a LabVIEW program, not included. It uses Python 3.
+All .py files use Python 3. The software requires data input from a LabVIEW program, not included.
 
-###AUTHORS
-
-R. Camuccio, T. Lehman-Borer, and A. Lytle
+Authors: R. Camuccio, T. Lehman-Borer, and A. Lytle
 
 ##ANALYSIS.PY
 
@@ -23,12 +21,13 @@ The code will prompt you for an A file and a B file. Select those from the menu 
 
 ###How to Use
 
-This program will also ask for an A file and a B file. As with `Analysis.py`, it will smooth, crop, and normalize the data. However, instead of displaying graphs, it will save a .DAT file, which is just an array(?) of the position values and the lineout values for the selected wavelength.
+This program will also ask for an A file and a B file. As with `Analysis.py`, it will smooth, crop, and normalize the data. However, instead of displaying graphs, it will save a .DAT file, which is just an array of the position values and the lineout values for the selected wavelength.
 
 ###Potential Improvements
 
 - make more user-friendly when selecting wavelengths to save
 - check for unnecessary code and remove
+- add first row with the actual wavelengths for ease of use (may not make sense as it would require removing the first element when loading data into a program
 
 ##WATERFALL GRAPH.PY
 
