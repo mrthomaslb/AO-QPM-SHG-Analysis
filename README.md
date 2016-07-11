@@ -29,6 +29,16 @@ This program will also ask for an A file and a B file. As with `Analysis.py`, it
 - check for unnecessary code and remove
 - add first row with the actual wavelengths for ease of use (may not make sense as it would require removing the first element when loading data into a program
 
+##STACKED PLOT.PY
+
+###How to Use
+
+Currently, this program does everything for you, as long as the correct saved lineouts are in the same folder. It displays a stacked graph of several lineouts at different beam ratios.
+
+###Potential Improvements
+
+- make more adaptable for different saved files
+
 ##WATERFALL GRAPH.PY
 
 ###How to Use
