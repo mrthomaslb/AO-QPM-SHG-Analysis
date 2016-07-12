@@ -17,10 +17,10 @@ from matplotlib import rc
 os.system("cls" if os.name == "nt" else "clear")
 
 ############################### VARIABLES ###############################
-lmdas = [406]        #must be between min_wavelength and max_wavelength
+lmdas = [402]        #must be between min_wavelength and max_wavelength
 smooth_factor = 11   #must be integer less than length of the array
 min_wavelength = 395 #wavelengths must be between 348.9 nm and 561.7 nm
-max_wavelength = 420 #max_wavelength must be greater than min_wavelength
+max_wavelength = 415 #max_wavelength must be greater than min_wavelength
 #########################################################################
 
 # Program header
@@ -32,52 +32,23 @@ print("---------------------------------------------------")
 print()
  
 #### FUNCTIONS ####
-def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
-	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
+def Smooth(intensity_array, smooth_factor):
+    smooth_int = np.zeros_like(intensity_array)
+    edge_pixels = (smooth_factor-1)//2
 
-	# Create temporary list for value handling
-	new_list = []
-
-	# Calculate edge pixels to avoid smoothing
-	edge_pixels = (smooth_factor - 1) // 2
-
-	# Initialize sum
-	current_sum = 0
-
-	# Place front edge values into list
-	for i in range(len(position_array)):
-		for j in range(edge_pixels):
-			new_list.append(intensity_array[j])
-
-	# Place values of interest into smoothing algorithm
-	for i in range(len(position_array)):
-		for j in range(edge_pixels, len(intensity_array)-edge_pixels):
-
-			# Crop the array around the pixels of interest
-			crop_array = intensity_array[j-edge_pixels:j+edge_pixels+1]
-
-			# Average crop_array into one value
-			for k in range(smooth_factor):
-				current_sum += crop_array[k]
-			#current_sum = np.sum(crop_array) #Not sure why this doesn't work
-			average = current_sum / smooth_factor
-
-			# Place averaged value into output list
-			new_list.append(average)
-
-			# Reset sum
-			current_sum = 0
-
-	# Place rear edge values into list
-	for i in range(len(position_array)):
-		for j in range(edge_pixels):
-			new_list.append(intensity_array[len(intensity_array)-edge_pixels+j])
-
-	# Convert list into array
-	intensity_array = np.asarray(new_list)
- 
-	# Return smoothed intensity array
-	return intensity_array
+    shape_array = np.shape(intensity_array)
+    nWl = shape_array[0]
+    nPos = shape_array[1]
+    
+    for i in range(nPos):
+        for j in range(0,edge_pixels):
+            smooth_int[j,i] = intensity_array[j,i]
+        for j in range(edge_pixels, nWl-edge_pixels):
+            smooth_int[j,i] = np.add.reduce(intensity_array[j-edge_pixels:j+edge_pixels+1,i])/smooth_factor
+        for j in range(nWl-edge_pixels,nWl):
+            smooth_int[j,i] = intensity_array[j,i]
+    
+    return smooth_int
 
 def wavel_to_pixel(wavelength):
 	""" This function accepts a wavelength value and returns the corresponding pixel value """
@@ -92,20 +63,6 @@ def wavel_to_pixel(wavelength):
 	pixel = int(math.floor(-(math.sqrt(((wavelength-B0)/A2)))-B1))
      
 	return pixel
-
-def CropData(wavelength_array, intensity_array, spectrum_array, min_wavel, max_wavel):
-	""" This function accepts a wavelength and intensity array and returns a cropped wavelength and intensity array """
-
-	# Calculation of minimum/maximum pixel number
-	P_min = wavel_to_pixel(min_wavel)
-	P_max = wavel_to_pixel(max_wavel)
-
-	# Crop arrays
-	intensity_array = intensity_array[P_min:P_max]
-	wavelength_array = wavelength_array[P_min:P_max]
-	spectrum_array = spectrum_array[P_min:P_max]
-
-	return wavelength_array, intensity_array, P_min, spectrum_array
 ########################
 
 ################## Read in data ##################
@@ -151,10 +108,10 @@ print("Length of input array = " + str(len(wavelengths[0])))
 ######################################################
 
 ################## Smooth data & normalization spectra ##################
-DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
+DeltaIntSm = Smooth(DeltaInt, smooth_factor)
 print("Smoothed")
 
-SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor)
+SpectraWOCPSm = Smooth(SpectraWOCP, smooth_factor)
 print("Smoothed Spectrum")
 
 #Reduce noise by subtracting to 0
@@ -163,11 +120,13 @@ SpectraWOCPSm -= offsetvalue #offsetvalue is the average of all noise values fro
 ###########################################################################
 
 ################## Crop data ##################
-CroppedData = CropData(np.transpose(wavelengths), DeltaIntSm, SpectraWOCP, min_wavelength, max_wavelength)
-wavelengthsCr = CroppedData[0]
-DeltaIntSmCr = CroppedData[1]
-MinPixel = CroppedData[2]
-SpectraWOCPSmCr = CroppedData[3]
+P_min = wavel_to_pixel(min_wavelength)
+P_max = wavel_to_pixel(max_wavelength)
+
+# Crop arrays
+DeltaIntSmCr = DeltaIntSm[P_min:P_max]
+wavelengthsCr = np.transpose(wavelengths)[P_min:P_max]
+SpectraWOCPSmCr = SpectraWOCPSm[P_min:P_max]
 ######################################################
 print("Cropped")
 
@@ -175,7 +134,7 @@ print("Cropped")
 DeltaIntNorm = np.zeros_like(DeltaIntSmCr)
 
 for i in range(scan_length):
-    DeltaIntNorm[:,i] = DeltaIntSmCr[:,i] / SpectraWOCPSmCr[:,i]
+    DeltaIntNorm[:,i] = DeltaIntSmCr[:,i] / SpectraWOCPSmCr[:,0]
 ######################################################
 print("Normalized")
 
@@ -210,7 +169,7 @@ for pixel in pixels:
     plt.ylabel("Wavelength (nm)")
                      
     ax3 = fig1.add_subplot(223)
-    plt.plot(positions[0], DeltaIntNorm[pixel-MinPixel])
+    plt.plot(positions[0], DeltaIntNorm[pixel-P_min])
     plt.title('%s nm Lineout' % lmdas[lmda_count])
     plt.xlabel(r'Relative position ($\mu$m)')
     plt.ylabel("% Change in Intensity")
