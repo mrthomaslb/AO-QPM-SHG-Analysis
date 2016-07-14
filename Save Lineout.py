@@ -15,20 +15,19 @@ from tkinter import filedialog
 os.system("cls" if os.name == "nt" else "clear")
 
 ############################### VARIABLES ###############################
-lmdas = [402,406]        #must be between min_wavelength and max_wavelength
-smooth_factor = 11   #must be integer less than length of the array
-min_wavelength = 395 #wavelengths must be between 348.9 nm and 561.7 nm
-max_wavelength = 415 #max_wavelength must be greater than min_wavelength
+lmdas = [402,406]
+smooth_factor = 11
+min_wavelength = min(lmdas)-smooth_factor #wavelengths must be between 348.9 nm and 561.7 nm
+max_wavelength = max(lmdas)+smooth_factor #max_wavelength must be greater than min_wavelength
 #########################################################################
 
 # Program header
 print("---------------------------------------------------")
-print(" Analysis Program for Counterpropagating Scan Data")
+print(" Save Lineout Program for Counterpropagating Scan Data")
 print(" Authors: R. Camuccio, T. Lehman-Borer, and A. Lytle")
-print(" Version: 2.0")
 print("---------------------------------------------------")
 print()
- 
+
 #### FUNCTIONS ####
 def Smooth(intensity_array, smooth_factor):
     smooth_int = np.zeros_like(intensity_array)
@@ -69,14 +68,6 @@ user_input1 = filedialog.askopenfile()
 print('Please select the B File.')
 user_input2 = filedialog.askopenfile()
 
-path = str(user_input1)
-position = path.find('scan')
-if path[position+5]=='a':
-    title = path[position-11:position+5]
-else:
-    title = path[position-11:position+6 ]
-#I could do the same thing with the B File to check if the user selected non-matching files
-
 raw_data = np.loadtxt(user_input1)
 wocp = np.loadtxt(user_input2)
 
@@ -114,7 +105,6 @@ SpectraWOCPSm -= offsetvalue #offsetvalue is the average of all noise values fro
 P_min = wavel_to_pixel(min_wavelength)
 P_max = wavel_to_pixel(max_wavelength)
 
-# Crop arrays
 DeltaIntSmCr = DeltaIntSm[P_min:P_max]
 wavelengthsCr = np.transpose(wavelengths)[P_min:P_max]
 SpectraWOCPSmCr = SpectraWOCPSm[P_min:P_max]
@@ -132,7 +122,7 @@ scan_number = input('Scan #: ')
 filename = './scan' + scan_number + 'lineouts.dat'
 
 ################## Save data to file ##################
-lineouts = np.zeros((np.shape(positions)[1]+1,len(pixels)+1))
+lineouts = np.zeros((scan_length+1,len(pixels)+1))
 lineouts[1:,0] = positions[0]
 for i in range(len(lmdas)):
     #put the wavelength in row 0
