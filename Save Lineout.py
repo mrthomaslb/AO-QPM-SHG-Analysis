@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Tue May 24 09:18:45 2016
 @author: amylytle
@@ -14,54 +14,39 @@ from tkinter import filedialog
 
 os.system("cls" if os.name == "nt" else "clear")
 
-#### FUNCTIONS ####
-def Smooth(position_array, wavelength_array, intensity_array, smooth_factor):
-	""" This function accepts a wavelength and intensity array and returns a smoothed intensity array """
+############################### VARIABLES ###############################
+lmdas = [402,406]        #must be between min_wavelength and max_wavelength
+smooth_factor = 11   #must be integer less than length of the array
+min_wavelength = 395 #wavelengths must be between 348.9 nm and 561.7 nm
+max_wavelength = 415 #max_wavelength must be greater than min_wavelength
+#########################################################################
 
-	# Create temporary list for value handling
-	new_list = []
-
-	# Calculate edge pixels to avoid smoothing
-	edge_pixels = (smooth_factor - 1) // 2
-
-	# Initialize sum and average
-	current_sum = 0
-	average = 0
-
-	# Place front edge values into list
-	for i in range(len(position_array)):
-		for j in range(edge_pixels):
-			new_list.append(intensity_array[j])
-
-	# Place values of interest into smoothing algorithm
-	for i in range(len(position_array)):
-		for j in range(edge_pixels, len(intensity_array)-edge_pixels):
-
-			# Crop the array around the pixels of interest
-			crop_array = intensity_array[j-edge_pixels:j+edge_pixels+1]
-
-			# Average crop_array into one value
-			for k in range(0, len(crop_array)):
-				current_sum = current_sum + crop_array[k]
-			average = current_sum / smooth_factor
-
-			# Place averaged value into output list
-			new_list.append(average)
-
-			# Reset sum and average
-			current_sum = 0
-			average = 0
-
-	# Place rear edge values into list
-	for i in range(len(position_array)):
-		for j in range(edge_pixels):
-			new_list.append(intensity_array[len(intensity_array)-edge_pixels+j])
-
-	# Convert list into array
-	intensity_array = np.asarray(new_list)
+# Program header
+print("---------------------------------------------------")
+print(" Analysis Program for Counterpropagating Scan Data")
+print(" Authors: R. Camuccio, T. Lehman-Borer, and A. Lytle")
+print(" Version: 2.0")
+print("---------------------------------------------------")
+print()
  
-	# Return smoothed intensity array
-	return intensity_array
+#### FUNCTIONS ####
+def Smooth(intensity_array, smooth_factor):
+    smooth_int = np.zeros_like(intensity_array)
+    edge_pixels = (smooth_factor-1)//2
+
+    shape_array = np.shape(intensity_array)
+    nWl = shape_array[0]
+    nPos = shape_array[1]
+    
+    for i in range(nPos):
+        for j in range(0,edge_pixels):
+            smooth_int[j,i] = intensity_array[j,i]
+        for j in range(edge_pixels, nWl-edge_pixels):
+            smooth_int[j,i] = np.add.reduce(intensity_array[j-edge_pixels:j+edge_pixels+1,i])/smooth_factor
+        for j in range(nWl-edge_pixels,nWl):
+            smooth_int[j,i] = intensity_array[j,i]
+    
+    return smooth_int
 
 def wavel_to_pixel(wavelength):
 	""" This function accepts a wavelength value and returns the corresponding pixel value """
@@ -76,24 +61,6 @@ def wavel_to_pixel(wavelength):
 	pixel = int(math.floor(-(math.sqrt(((wavelength-B0)/A2)))-B1))
      
 	return pixel
-
-def CropData(wavelength_array, intensity_array, spectrum_array):
-	""" This function accepts a wavelength and intensity array and returns a cropped wavelength and intensity array """
-
-	# Specify minimum wavelength
-	min_wavelength = 395 
-	max_wavelength = 420 
-
-	# Calculation of minimum/maximum pixel number
-	P_min = wavel_to_pixel(min_wavelength)
-	P_max = wavel_to_pixel(max_wavelength)
-
-	# Crop arrays
-	intensity_array = intensity_array[P_min:P_max]
-	wavelength_array = wavelength_array[P_min:P_max]
-	spectrum_array = spectrum_array[P_min:P_max]
-
-	return wavelength_array, intensity_array, P_min, spectrum_array
 ########################
 
 ################## Read in data ##################
@@ -101,6 +68,14 @@ print('Please select the A File.')
 user_input1 = filedialog.askopenfile()
 print('Please select the B File.')
 user_input2 = filedialog.askopenfile()
+
+path = str(user_input1)
+position = path.find('scan')
+if path[position+5]=='a':
+    title = path[position-11:position+5]
+else:
+    title = path[position-11:position+6 ]
+#I could do the same thing with the B File to check if the user selected non-matching files
 
 raw_data = np.loadtxt(user_input1)
 wocp = np.loadtxt(user_input2)
@@ -120,41 +95,36 @@ SpectraWOCP = np.zeros_like(DeltaInt)
 for i in range (0, scan_length):
     SpectraWOCP[:,i] = wocp[:,2*i]
 
-lmda1 = 402
-lmda2 = 404
-lmda3 = 411
-
-pixel1=wavel_to_pixel(lmda1)
-pixel2=wavel_to_pixel(lmda2)
-pixel3=wavel_to_pixel(lmda3)
-
-pixel=wavel_to_pixel(lmda1)
-
-smooth_factor = 11
+pixels = []
+for lmda in lmdas:
+    pixel=wavel_to_pixel(lmda)
+    pixels.append(pixel)
 ######################################################
 
 ################## Smooth data & normalization spectra ##################
-DeltaIntSm = Smooth(positions, wavelengths, DeltaInt, smooth_factor)
+DeltaIntSm = Smooth(DeltaInt, smooth_factor)
+SpectraWOCPSm = Smooth(SpectraWOCP, smooth_factor)
 
-SpectraWOCPSm = Smooth(positions, wavelengths, SpectraWOCP, smooth_factor)
-
+#Reduce noise by subtracting to 0
 offsetvalue = np.mean(SpectraWOCPSm[0:387]) #387 is the pixel for 375 nm
 SpectraWOCPSm -= offsetvalue #offsetvalue is the average of all noise values from 350 nm to 375 nm for all the spectra taken in this scan
 ###########################################################################
 
 ################## Crop data ##################
-CroppedData = CropData(np.transpose(wavelengths), DeltaIntSm, SpectraWOCP)
-wavelengthsCr = CroppedData[0]
-DeltaIntSmCr = CroppedData[1]
-MinPixel = CroppedData[2]
-SpectraWOCPSmCr = CroppedData[3]
+P_min = wavel_to_pixel(min_wavelength)
+P_max = wavel_to_pixel(max_wavelength)
+
+# Crop arrays
+DeltaIntSmCr = DeltaIntSm[P_min:P_max]
+wavelengthsCr = np.transpose(wavelengths)[P_min:P_max]
+SpectraWOCPSmCr = SpectraWOCPSm[P_min:P_max]
 ######################################################
 
 ################## Normalize data ##################
 DeltaIntNorm = np.zeros_like(DeltaIntSmCr)
 
 for i in range(scan_length):
-    DeltaIntNorm[:,i] = DeltaIntSmCr[:,i] / SpectraWOCPSmCr[:,i]
+    DeltaIntNorm[:,i] = DeltaIntSmCr[:,i] / SpectraWOCPSmCr[:,0]
 ######################################################
 
 #Determining filename  
@@ -162,14 +132,13 @@ scan_number = input('Scan #: ')
 filename = './scan' + scan_number + 'lineouts.dat'
 
 ################## Save data to file ##################
-lineout1 = DeltaIntNorm[pixel1-MinPixel]
-lineout2 = DeltaIntNorm[pixel2-MinPixel]
-lineout3 = DeltaIntNorm[pixel3-MinPixel]
-length = np.shape(lineout1)
-lineouts = np.zeros((length[0],5))
-lineouts[:,1] = lineout1
-lineouts[:,2] = lineout2
-lineouts[:,3] = lineout3
-lineouts[:,0] = positions[0]
+lineouts = np.zeros((np.shape(positions)[1]+1,len(pixels)+1))
+lineouts[1:,0] = positions[0]
+for i in range(len(lmdas)):
+    #put the wavelength in row 0
+    lineouts[0:1:,i+1]=lmdas[i]
+    lineout = DeltaIntNorm[pixels[i]-P_min]
+    #put the lineout below
+    lineouts[1:,i+1]=lineout
 np.savetxt(filename,lineouts)
 ######################################################
