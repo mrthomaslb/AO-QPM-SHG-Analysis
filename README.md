@@ -13,21 +13,14 @@ The code will prompt you for an A file and a B file. Select those from the menu 
 
 ##SAVE LINEOUT.PY
 ###How to Use
-This program will also ask for an A file and a B file. As with `Analysis.py`, it will smooth, crop, and normalize the data. However, instead of displaying graphs, it will save a .DAT file, which is just an array of the position values and the lineout values for the selected wavelength.
-###Potential Improvements
-- make more user-friendly when selecting wavelengths to save
-- check for unnecessary code and remove
-- add first row with the actual wavelengths for ease of use (may not make sense as it would require removing the first element when loading data into a program
+This program will also ask for an A file and a B file. As with `Analysis.py`, it will smooth, crop, and normalize the data. However, instead of displaying graphs, it will save a .DAT file, which is just an array of the position values and the lineout values for the selected wavelength. The top row of the file has the wavelength of each respective lineout.
 
 ##STACKED PLOT.PY
 ###How to Use
-Currently, this program does everything for you, as long as the correct saved lineouts are in the same folder. It displays a stacked graph of several lineouts at different beam ratios.
-###Potential Improvements
-- make more adaptable for different saved files
+You are prompted to open a set of lineouts. These must be selected together, using the `SHIFT` key. It displays a stacked graph of several lineouts at different beam electric field ratios. Make sure that the variables in the top section of the code are correct for the data you are using.
 
 ##WATERFALL GRAPH.PY
 ###How to Use
-Currently, this only works with the current version of `Save Lineout.py`. You are prompted to open a set of lineouts. Upon doing so, it shows a 3d graph of positions, wavelengths, and power ratios. The power ratios are in the program itself, so to look at a new set of data, this needs to be changed.
+You are prompted to open a set of lineouts. These must be selected together, using the `SHIFT` key. Upon doing so, it shows a 3d graph of positions, wavelengths, and electric field ratios. Make sure that the variables in the top section of the code are correct for the data you are using.
 ###Potential Improvements
-* make more adaptable for different saved files
 * add color variation for visual clarity
