@@ -6,6 +6,7 @@ from matplotlib.colors import colorConverter
 from tkinter import filedialog
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 import os
 
 os.system("cls" if os.name == "nt" else "clear")
@@ -57,8 +58,17 @@ for z in range(len(ratios)):
         maxy = max(ys)
     if min(ys) < miny:
         miny = min(ys)
-
-poly = PolyCollection(verts, facecolors=[cc('r'), cc('g'), cc('b'), cc('y')])
+colors = [cc('r'), cc('y'), cc('g'), cc('b'), cc('m'), cc('c'), cc('k'), cc('w')]
+if len(ratios)<8:
+    fc = colors[:len(ratios)]
+else:
+    fc = colors
+    for c in range(len(ratios)-8):
+        r = random.random()
+        g = random.random()
+        b = random.random()
+        fc.append((r,g,b ))
+poly = PolyCollection(verts, facecolors=fc)
 poly.set_alpha(0.7) #transparency
 ax.add_collection3d(poly, zs=ratios, zdir='y')
 
