@@ -22,5 +22,3 @@ You are prompted to open a set of lineouts. These must be selected together, usi
 ##WATERFALL GRAPH.PY
 ###How to Use
 You are prompted to open a set of lineouts. These must be selected together, using the `SHIFT` key. Upon doing so, it shows a 3d graph of positions, wavelengths, and electric field ratios. Make sure that the variables in the top section of the code are correct for the data you are using.
-###Potential Improvements
-* add color variation for visual clarity
