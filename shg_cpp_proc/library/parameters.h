@@ -2,6 +2,7 @@
 #define PARAMETERS_H
 #include <string>
 #include <vector>
+#include <iostream>
 #include "constants.h"
 #include "read_configs.h"
 
@@ -30,10 +31,13 @@ struct parameters
     double FWHMBack, amplitudeBack, timeSeparationBack, partialReflectionBack;
 
     // Crystal
-    double redIndex, blueIndex;
+    double theta, redIndex, blueIndex;
 
     // Wavenumbers
     double kRed, kBlue;
+
+    double redIndexCalc(double lambda);
+    double blueIndexCalc(double lambda, double theta);
 };
 
 #endif
