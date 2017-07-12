@@ -1,5 +1,5 @@
 # Compiler
-CXX = g++
+CXX = /usr/local/bin/g++-7
 
 # Compilation flags
 CPPFLAGS = -O2 -std=c++11 -Wall -Wextra -fopenmp
