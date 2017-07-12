@@ -1,0 +1,7 @@
+#ifndef LASER_H
+#define LASER_H
+#include <vector>
+#include <string>
+#include <cmath>
+#include "matrix.h"
+#include "parameters.h"

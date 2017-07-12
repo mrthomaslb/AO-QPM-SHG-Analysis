@@ -1,0 +1,38 @@
+#ifndef LASER_H
+#define LASER_H
+#include <vector>
+#include <string>
+#include <cmath>
+#include "matrix.h"
+#include "parameters.h"
+#include "mesh.h"
+#include "laser.h"
+
+
+vector<double> calc_gaussian_shape(double amplitude, vector<double> timeAxis,
+				   double center, double FWHM, int order)
+{
+    vector<double> shape(timeAxis.size());
+
+    double sigma = calc_sigma(FWHM, order);
+
+    for(int i = 0; i<timeAxis.size(); i++)
+	shape[i] = amplitude * exp(- pow(timeAxis[i]-center,2.*order) / sigma);
+
+    return shape;
+}
+
+vector<double> pulse_train_gen(int numOfPulses, vector<double> amplitude,
+			       vector<double> timeAxis, vector<double> centers,
+			       vector<double> FWHM, vector<int> orders);
+
+vector<double> calc_etalon_shape(double firstAmplitude, vector<double> timeAxis,
+				 double firstCenter, double FWHM,
+				 double timeSeparation,
+				 double partialReflection, int numOfPulses,
+				 int order);
+
+vector<double> calc_pulse_train(double amplitude, vector<double> timeAxis,
+				double firstCenter, double FWHM,
+				int numOfPulses, double timeSeparation,
+				int order);

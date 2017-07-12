@@ -1,0 +1,11 @@
+#include <vector>
+#include <string>
+#include <cmath>
+#include "matrix.h"
+#include "parameters.h"
+#include "mesh.h"
+
+mesh::mesh(parameters par)
+{
+    vg = var.vg;
+}

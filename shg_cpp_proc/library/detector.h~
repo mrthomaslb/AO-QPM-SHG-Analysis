@@ -1,0 +1,8 @@
+#ifndef DETECTOR_H
+#define DETECTOR_H
+
+struct detectors
+{
+};
+
+#endif

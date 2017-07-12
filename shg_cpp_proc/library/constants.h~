@@ -1,0 +1,13 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+#include <cmath>
+
+using namespace std;
+
+const double kb = 1.3806488e-23;
+const double qe = 1.60217657e-19;
+const double hbar = 1.05457173e-34;
+const double PI = atan(1.0)*4;
+const double c = 299792458.;
+
+#endif

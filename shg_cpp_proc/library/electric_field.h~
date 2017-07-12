@@ -1,0 +1,20 @@
+#ifndef EFIELD_H
+#define EFIELD_H
+#include <string>
+#include <vector>
+#include <complex>
+#include "laser_pulse.h"
+
+using namespace std;
+
+struct electricField
+{
+    vector<vector<double> > forEfield;
+    vector<vector<double> > backEfield;
+    vector<vector<double> > totalEfield;
+    vector<vector<complex<double> > > polarization;
+};
+
+
+vector<vector<double> > calc_for_elec_field(vector<double> forLaserShape);
+vector<vector<double> > calc_back_elec_field(vector<double> backLaserShape);

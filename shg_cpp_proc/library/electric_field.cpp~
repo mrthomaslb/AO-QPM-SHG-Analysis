@@ -1,0 +1,13 @@
+#ifndef EFIELD_H
+#define EFIELD_H
+#include <string>
+#include <vector>
+#include <complex>
+#include "laser.h"
+#include "electric_field.h"
+
+electricField::electricField(vector<double> forLaserShape)
+{
+    forEfield = calc_for_elec_field(forLaserShape);
+    polarization = calc_polarization(forEfield);
+}

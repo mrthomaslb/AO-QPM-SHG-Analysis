@@ -1,0 +1,23 @@
+#include <string>
+#include <vector>
+#include "read_configs.h"
+#include "parameters.h"
+
+parameters::parameters(string location)
+{
+    ifstream file;
+    file.open(location.c_str());
+    check_file(file, location);
+
+    Nx = read_in_int(file);
+    Lx = read_in_double(file);
+    Lt = read_in_double(file);
+    vg = read_in_double(file);
+
+    wavelength = read_in_double(file);
+    trainType = read_in_int(file);
+    order = read_in_int(file);
+    FWHM = read_in_double(file);
+    firstCenter = read_in_double(file);
+    amplitude = read_in_double(file);
+    numOfPulses = read_in_int(file);

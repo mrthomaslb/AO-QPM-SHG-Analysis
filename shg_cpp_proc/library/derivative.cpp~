@@ -1,0 +1,360 @@
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <complex>
+#include "derivative.h"
+
+//// --------------------------------------------------------------------------
+//// Internal functions declarations
+
+/* Internal functions necessary to perform first order low resolution 
+ * differentiation.
+ */
+
+//template <typename Type> Type first_der_3pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type first_der_3pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type first_der_3pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+
+
+/* Internal functions necessary to perform first order high resolution 
+ * differentiation.
+ */
+//template <typename Type> Type first_der_5pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type first_der_5pts_half_forward(int x_index,double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type  first_der_5pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type first_der_5pts_half_backward(int x_index, 
+        //double dx, vector<Type> &y_axis);
+//template <typename Type> Type first_der_5pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+
+/* Internal functions necessary to perform second order low resolution 
+ * differentiation.
+ */
+//template <typename Type> Type second_der_4pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type second_der_3pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type second_der_4pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+
+/* Internal functions necessary to perform second order high resolution 
+ * differentiation.
+ */
+//template <typename Type> Type second_der_6pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type second_der_6pts_half_forward(int x_index, 
+        //double dx, vector<Type> &y_axis);
+//template <typename Type> Type second_der_5pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis);
+//template <typename Type> Type second_der_6pts_half_backward(int x_index, 
+        //double dx, vector<Type> &y_axis);
+//template <typename Type> Type second_der_6pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis);
+
+//// Internal function to calculate the dx from input arrays.
+//double calc_dx(vector<double> &x_axis);
+
+//// Internal function to check that the arrays are the same length
+//template <typename Type> void check_axis_length(vector<double> x_axis, 
+        //vector<Type> y_axis);
+
+
+//// --------------------------------------------------------------------------
+
+//template <typename Type> vector<Type> first_der_low_res_1d(vector<double> &x_axis, 
+        //vector<Type> &y_axis)
+//{
+  //// Calculate dx
+  //double dx = calc_dx(x_axis);
+  
+  //// Length check
+  //check_axis_length(x_axis,y_axis);
+  
+  //// Create return array
+  //vector<Type> derivative;
+  //derivative.resize(y_axis.size());
+  
+  //for(int i=0; i<y_axis.size(); i++)
+  //{
+    //if(i==0)
+    //{
+      //derivative[i] = first_der_3pts_forward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-1)
+    //{
+      //derivative[i] = first_der_3pts_backward(i, dx, y_axis);
+    //}
+    //else
+    //{
+      //derivative[i] = first_der_3pts_centered(i, dx, y_axis);
+    //}
+  //}
+  
+  //return derivative;
+//}
+
+
+//template <typename Type> vector<Type> first_der_high_res_1d(vector<double> &x_axis, 
+        //vector<Type> &y_axis)
+//{
+  //// Calculate dx
+  //double dx = calc_dx(x_axis);
+  
+  //// Length check
+  //check_axis_length(x_axis,y_axis);
+  
+  //// Create return array
+  //vector<Type> derivative;
+  //derivative.resize(y_axis.size());
+  
+  //for(int i=0; i<y_axis.size(); i++)
+  //{
+    //if(i==0)
+    //{
+      //derivative[i] = first_der_5pts_forward(i, dx, y_axis);
+    //}
+    //else if(i==1)
+    //{
+      //derivative[i] = first_der_5pts_half_forward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-2)
+    //{
+      //derivative[i] = first_der_5pts_half_backward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-1)
+    //{
+      //derivative[i] = first_der_5pts_backward(i, dx, y_axis);
+    //}
+    //else
+    //{
+      //derivative[i] = first_der_5pts_centered(i, dx, y_axis);
+    //}
+  //}
+  
+  //return derivative;
+//}
+
+
+//template <typename Type> vector<Type> second_der_low_res_1d(vector<double> &x_axis, 
+        //vector<Type> &y_axis)
+//{
+  //// Calculate dx
+  //double dx = calc_dx(x_axis);
+  
+  //// Length check
+  //check_axis_length(x_axis,y_axis);
+  
+  //// Create return array
+  //vector<Type> derivative;
+  //derivative.resize(y_axis.size());
+  
+  //for(int i=0; i<y_axis.size(); i++)
+  //{
+    //if(i==0)
+    //{
+      //derivative[i] = second_der_4pts_forward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-1)
+    //{
+      //derivative[i] = second_der_4pts_backward(i, dx, y_axis);
+    //}
+    //else
+    //{
+      //derivative[i] = second_der_3pts_centered(i, dx, y_axis);
+    //}
+  //}
+  
+  //return derivative;
+//}
+
+
+//template <typename Type> vector<Type> second_der_high_res_1d(vector<double> &x_axis, 
+        //vector<Type> &y_axis)
+//{
+  //// Calculate dx
+  //double dx = calc_dx(x_axis);
+  
+  //// Length check
+  //check_axis_length(x_axis,y_axis);
+  
+  //// Create return array
+  //vector<Type> derivative;
+  //derivative.resize(y_axis.size());
+  
+  //for(int i=0; i<y_axis.size(); i++)
+  //{
+    //if(i==0)
+    //{
+      //derivative[i] = second_der_6pts_forward(i, dx, y_axis);
+    //}
+    //else if(i==1)
+    //{
+      //derivative[i] = second_der_6pts_half_forward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-2)
+    //{
+      //derivative[i] = second_der_6pts_half_backward(i, dx, y_axis);
+    //}
+    //else if(i==y_axis.size()-1)
+    //{
+      //derivative[i] = second_der_6pts_backward(i, dx, y_axis);
+    //}
+    //else
+    //{
+      //derivative[i] = second_der_5pts_centered(i, dx, y_axis);
+    //}
+  //}
+  
+  //return derivative;
+//}
+
+
+//template <typename Type> Type first_der_3pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (-3*y_axis[x_index] + 4*y_axis[x_index+1] - y_axis[x_index+2])/(2*dx);
+//}
+
+
+//template <typename Type> Type first_der_3pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (y_axis[x_index+1] - y_axis[x_index-1])/(2*dx);
+//}
+
+
+//template <typename Type> Type first_der_3pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (3*y_axis[x_index] - 4*y_axis[x_index-1] + y_axis[x_index-2])/(2*dx);
+//}
+
+
+//template <typename Type> Type first_der_5pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (-25*y_axis[x_index] + 48*y_axis[x_index+1] - 36*y_axis[x_index+2] +
+  //16*y_axis[x_index+3] - 3*y_axis[x_index+4]) / (12*dx);
+//}
+
+
+//template <typename Type> Type first_der_5pts_half_forward(int x_index, 
+        //double dx, vector<Type> &y_axis)
+//{
+  //return (-3*y_axis[x_index-1] - 10*y_axis[x_index] + 18*y_axis[x_index+1] -
+  //6*y_axis[x_index+2] + y_axis[x_index+3]) / (12*dx);
+//}
+
+
+//template <typename Type> Type first_der_5pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (y_axis[x_index-2] - 8*y_axis[x_index-1] + 8*y_axis[x_index+1] -
+  //y_axis[x_index+2]) / (12*dx);
+//}
+
+
+//template <typename Type> Type first_der_5pts_half_backward(int x_index, 
+        //double dx, vector<Type> &y_axis)
+//{
+  //return (-y_axis[x_index-3] + 6*y_axis[x_index-2] - 18*y_axis[x_index-1] +
+  //10*y_axis[x_index] + 3*y_axis[x_index+1]) / (12*dx);
+//}
+
+
+//template <typename Type> Type first_der_5pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (25*y_axis[x_index] - 48*y_axis[x_index-1] + 36*y_axis[x_index-2] - 
+  //16*y_axis[x_index-3] + 3*y_axis[x_index-4]) / (12*dx); 
+//}
+
+
+//template <typename Type> Type second_der_4pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (2*y_axis[x_index] - 5*y_axis[x_index+1] + 4*y_axis[x_index+2] -
+  //y_axis[x_index+3]) / pow(dx,2);
+//}
+
+
+//template <typename Type> Type second_der_3pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (y_axis[x_index-1] - 2*y_axis[x_index] + y_axis[x_index+1])/ pow(dx,2);
+//}
+
+
+//template <typename Type> Type second_der_4pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (-y_axis[x_index-3] + 4*y_axis[x_index-2] - 5*y_axis[x_index-1] +
+  //2*y_axis[x_index])/pow(dx,2);
+//}
+
+
+//template <typename Type> Type second_der_6pts_forward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (45*y_axis[x_index] - 154*y_axis[x_index+1] + 214*y_axis[x_index+2] -
+  //156*y_axis[x_index+3] + 61*y_axis[x_index+4] - 10*y_axis[x_index+5]) /
+  //(12*pow(dx,2));
+//}
+
+
+//template <typename Type> Type second_der_6pts_half_forward(int x_index, 
+        //double dx, vector<Type> &y_axis)
+//{
+  //return (10*y_axis[x_index-1] - 15*y_axis[x_index] - 4*y_axis[x_index+1] + 
+  //14*y_axis[x_index+2] - 6*y_axis[x_index+3] + y_axis[x_index+4]) / 
+  //(12*pow(dx,2));
+//}
+
+
+//template <typename Type> Type second_der_5pts_centered(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (-y_axis[x_index-2] + 16*y_axis[x_index-1] - 30*y_axis[x_index] +
+  //16*y_axis[x_index+1] - y_axis[x_index+2]) / (12*pow(dx,2));
+//}
+
+
+//template <typename Type> Type second_der_6pts_half_backward(int x_index,
+        //double dx, vector<Type> &y_axis)
+//{
+  //return (y_axis[x_index-4] - 6*y_axis[x_index-3] + 14*y_axis[x_index-2] - 
+  //4*y_axis[x_index-1] - 15*y_axis[x_index] + 10*y_axis[x_index+1]) / 
+  //(12*pow(dx,2));
+//}
+
+
+//template <typename Type> Type second_der_6pts_backward(int x_index, double dx, 
+        //vector<Type> &y_axis)
+//{
+  //return (-10*y_axis[x_index-5] + 61*y_axis[x_index-4] - 156*y_axis[x_index-3] +
+  //214*y_axis[x_index-2] - 154*y_axis[x_index-1] + 45*y_axis[x_index]) /
+  //(12*pow(dx,2));
+//}
+
+
+//double calc_dx(vector<double> &x_axis)
+//{
+  //return fabs(x_axis[1]-x_axis[0]);
+//}
+
+
+//template <typename Type> void check_axis_length(vector<double> x_axis, 
+        //vector<Type> y_axis)
+//{
+  //if(x_axis.size() != y_axis.size())
+  //{
+    //cout << "Arrays are of different length in differentiation." 
+		  //<< endl;
+  //} 
+//}
