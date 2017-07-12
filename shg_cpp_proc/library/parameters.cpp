@@ -1,8 +1,41 @@
 #include <string>
 #include <vector>
+#include <cmath>
+#include <iostream>
 #include "constants.h"
 #include "read_configs.h"
 #include "parameters.h"
+
+double o1 = 2.7359;
+double o2 = 0.01878;
+double o3 = 0.01822;
+double o4 = 0.01354;
+
+double parameters::redIndexCalc(double lambda){
+    double n;
+    n = sqrt(o1 + o2/(pow(lambda,2)-o3) - o4*pow(lambda,2));
+    return n;
+}
+
+double parameters::blueIndexCalc(double lambda, double theta){
+    double e1 = 2.3753;
+    double e2 = 0.01224;
+    double e3 = 0.01667;
+    double e4 = 0.01516;
+
+    double no;
+    double ne;
+    double n;
+
+    no = sqrt(o1 + o2/(pow(lambda,2)-o3) - o4*pow(lambda,2));
+    ne = sqrt(e1 + e2/(pow(lambda,2)-e3) - e4*pow(lambda,2));
+
+    double tan = sin(theta) / cos(theta);
+    double cot = cos(theta) / sin(theta);
+
+    n = sqrt(pow(ne / sqrt( pow(ne/no,2) + pow(tan,2) ),2)  +  pow(no / sqrt( pow(no/ne,2) + pow(cot,2) ),2));    
+    return n;
+}
 
 parameters::parameters(string location)
 {
@@ -35,8 +68,11 @@ parameters::parameters(string location)
     numOfPulsesBack = read_in_int(file);
     timeSeparationBack = read_in_double(file);
     partialReflectionBack = read_in_double(file);
-    redIndex = read_in_double(file);
-    blueIndex = read_in_double(file);
+
+    theta = read_in_double(file);
+
+    redIndex = redIndexCalc(wavelength*100);
+    blueIndex = blueIndexCalc(200*wavelength, theta);
 
     file.close();
 
