@@ -101,6 +101,8 @@ vector<vector<complex<double> > > calc_polarization(
         for(unsigned int j = 0; j<forEfield[0].size(); j++)
 	    pol[i][j] = pow(forEfield[i][j] +
                    backEfield[i][j]*exp(-2.*I*k*xAxis[i]-I*backPhase),2);
+//        pol[i][j] = pow(forEfield[i][j],2) +
+//                forEfield[i][j]*backEfield[i][j]*exp(-2.*I*k*xAxis[i]-I*backPhase);
 
     return pol;
 }
