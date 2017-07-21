@@ -50,8 +50,9 @@ def Smooth(intensity_array, smooth_factor):
     
     return smooth_int
 
-def wavel_to_pixel(wavelength):
-	""" This function accepts a wavelength value and returns the corresponding pixel value """
+def old_wavel_to_pixel(wavelength):
+	""" This function accepts a wavelength value and returns the corresponding
+     pixel value for the USB4000 spectrometer."""
  
 	A0 = 348.4316445
 	A1 = 0.069763835
@@ -63,6 +64,18 @@ def wavel_to_pixel(wavelength):
 	pixel = int(math.floor(-(math.sqrt(((wavelength-B0)/A2)))-B1))
      
 	return pixel
+ 
+def wavel_to_pixel(wavelength):
+     """ This function accepts a wavelength value and returns the corresponding
+     pixel value for the QE Pro spectrometer."""
+     
+     A0 = 348.97644043
+     A1 = 0.1238385588
+     A2 = -9.8813e-6
+     
+     pixel = round((-A1 + math.sqrt(A1**2 - 4*A2*(A0-wavelength)))/(2*A2))
+     
+     return pixel
 ########################
 
 ################## Read in data ##################
